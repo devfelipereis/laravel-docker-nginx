@@ -11,7 +11,7 @@ services:
       - ./:/var/www/html
     ports:
       - "80:8000"
-      - "443:443"
+      - "9001:9001"
     depends_on:
       - database
       - redis
