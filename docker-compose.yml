@@ -1,0 +1,46 @@
+version: '2.0'
+services:
+
+  application:
+    build:
+      context: .
+      args:
+        - UID=${UID}
+        - GID=${GID}
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "80:8000"
+      - "443:443"
+    depends_on:
+      - database
+      - redis
+
+  database:
+    image: mysql:5.7
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    environment:
+      - MYSQL_DATABASE=laravel
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=America/SaoPaulo
+    ports:
+      - "3306:3306"
+    volumes:
+      - database-data:/var/lib/mysql
+
+  redis:
+    image: redis:4.0.5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  database-data:
+    driver: "local"
+  redis-data:
+    driver: "local"
+
+networks:
+  default:
+    external:
+      name: dev
