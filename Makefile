@@ -7,6 +7,7 @@ stop:
 	docker-compose stop
 
 down:
+	rm .env || true
 	docker-compose down
 
 sh:
