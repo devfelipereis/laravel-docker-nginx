@@ -1,5 +1,7 @@
 # laravel-docker-nginx
-Docker configuration for Laravel using PHP,  Nginx and Supervisor. Xdebug included.
+Docker configuration for Laravel using PHP, Nginx and Supervisor. Xdebug included.<br/><br/>
+
+To get started, copy and paste all the files from this repository and paste in the root of your laravel application.
 
 In dev environment:
 
