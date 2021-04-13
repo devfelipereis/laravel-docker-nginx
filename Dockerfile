@@ -11,7 +11,7 @@ ADD https://dl.bintray.com/php-alpine/key/php-alpine.rsa.pub /etc/apk/keys/php-a
 
 RUN apk --update-cache add ca-certificates openssl bash git grep \
     dcron tzdata su-exec shadow supervisor && \
-    echo "https://dl.bintray.com/php-alpine/v3.11/php-7.4" >> /etc/apk/repositories
+    echo "https://dl.bintray.com/php-alpine/v3.11/php-8.0" >> /etc/apk/repositories
 
 RUN wget -O /sbin/wait-for.sh https://raw.githubusercontent.com/eficode/wait-for/v2.1.0/wait-for && chmod +x /sbin/wait-for.sh
 
@@ -25,7 +25,6 @@ RUN apk add --update-cache \
     php-fpm \
     php-gd \
     php-intl \
-    php-json \
     php-mbstring \
     php-openssl \
     php-pdo \
@@ -39,7 +38,7 @@ RUN apk add --update-cache \
     php-pcntl \
     php-dom \
     php-posix && \
-    ln -s /usr/bin/php7 /usr/bin/php
+    ln -s /usr/bin/php8 /usr/bin/php
 
 RUN if [ "$APP_ENV" = "development" ]; then apk --update-cache add autoconf gcc libc-dev make && \
     pecl channel-update pecl.php.net && pecl install xdebug; else echo "Xdebug installation skipped..."; fi
@@ -64,12 +63,12 @@ RUN mkdir -p /var/cache/nginx && chown -R nginx:nginx /var/cache/nginx && \
 
 # config files
 COPY .docker /tmp/docker-configs
-RUN if [ "$APP_ENV" = "development" ]; then cp /tmp/docker-configs/conf/xdebug.ini /etc/php7/conf.d/xdebug.ini; else echo "xdebug.ini skipped..."; fi && \
-    cp /tmp/docker-configs/conf/php-fpm-pool.conf /etc/php7/php-fpm.d/www.conf && \
+RUN if [ "$APP_ENV" = "development" ]; then cp /tmp/docker-configs/conf/xdebug.ini /etc/php8/conf.d/xdebug.ini; else echo "xdebug.ini skipped..."; fi && \
+    cp /tmp/docker-configs/conf/php-fpm-pool.conf /etc/php8/php-fpm.d/www.conf && \
     mkdir -p /etc/supervisor && cp /tmp/docker-configs/conf/supervisord.conf /etc/supervisor/supervisord.conf && \
     cp /tmp/docker-configs/conf/nginx.conf /etc/nginx/nginx.conf && \
     cp /tmp/docker-configs/conf/nginx-site.conf /etc/nginx/conf.d/default.conf && \
-    cp /tmp/docker-configs/conf/php.ini /etc/php7/conf.d/50-settings.ini && \
+    cp /tmp/docker-configs/conf/php.ini /etc/php8/conf.d/50-settings.ini && \
     cp /tmp/docker-configs/entrypoint.sh /sbin/entrypoint.sh && \
     rm -rf /tmp/docker-configs
 
