@@ -44,7 +44,7 @@ RUN if [ "$APP_ENV" = "development" ]; then apk --update-cache add autoconf gcc 
     pecl channel-update pecl.php.net && pecl install xdebug; else echo "Xdebug installation skipped..."; fi
 
 # Sync user and group with the host
-RUN usermod -u ${UID} nginx && groupmod -g ${GID} nginx
+RUN if [ "$APP_ENV" = "development" ]; then usermod -u ${UID} nginx && groupmod -g ${GID} nginx; fi
 
 # Configure time
 RUN echo "America/Sao_Paulo" > /etc/timezone && \
@@ -74,9 +74,18 @@ RUN if [ "$APP_ENV" = "development" ]; then cp /tmp/docker-configs/conf/xdebug.i
 
 WORKDIR /var/www/html/
 
+COPY --from=composer:2.0 /usr/bin/composer /usr/bin/composer
+
 COPY --chown=nginx:nginx ./ .
 
-COPY --from=composer:2.0 /usr/bin/composer /usr/bin/composer
+RUN if [ "$APP_ENV" != "development" ]; then composer install \
+    --no-ansi \
+    --no-dev \
+    --no-interaction \
+    --no-scripts && composer dump-autoload --optimize --classmap-authoritative && \
+    chown -R nginx:nginx vendor && \
+    find ./ -type d -exec chmod 755 {} \; && \
+    find ./ -type f -exec chmod 644 {} \; ; fi
 
 EXPOSE 8000
 
